@@ -20,16 +20,19 @@ $('.add-todo').on('keypress',function (e)
                      },
                          success:function(data) 
                          {
+
                           if(data.itemvalidationError)
                           {
-  var message = '<div class="alert alert-danger"><strong>Error! </strong>'+data.message+'</div>';
+                          var message = '<div class="alert alert-danger"><strong>Error! </strong>'+data.message+'</div>';
                             $("#application_message").html(message);
                           }
                           else
                           {
+                            
                             var message = '<div class="alert alert-success"><strong>Success! </strong>'+data.message+'</div>';
                             $("#application_message").html(message);
                             createTodo(todo,data.resultData._id); 
+                             countTodos();
                           }
                           
                    },
@@ -39,7 +42,7 @@ $('.add-todo').on('keypress',function (e)
                      },
                   });
 
-            countTodos();
+           
          
       }
 });
@@ -57,8 +60,6 @@ $('.todolist').on('change','#sortable li input[type="checkbox"]',function()
           $(this).parent().addClass('all-ready-marked');
           itemMarkStatus = true;
           
-       // done(doneItem);
-        //countTodos();
     }
     else
     {
@@ -67,9 +68,7 @@ $('.todolist').on('change','#sortable li input[type="checkbox"]',function()
         $(this).parent().parent().parent().removeClass('done-list-marked');
           $(this).parent().removeClass('all-ready-marked');
           itemMarkStatus = false
-      
-       // done(doneItem);
-        //countTodos();
+    
     }
       $.ajax({
                      url: "{{ env.HOST_NAME }}/markitem", 
@@ -81,11 +80,10 @@ $('.todolist').on('change','#sortable li input[type="checkbox"]',function()
                      },
                          success:function(data) 
                          {
-                              countTodos();
-
+                            
                            var message = '<div class="alert alert-success"><strong>Success! </strong>'+data.message+'</div>';
                             $("#application_message").html(message);
-                          //console.log(data);
+                            countTodos();
                    },
                          error:function() {
                           var message = '<div class="alert alert-danger"><strong>Error! </strong>Item  did not mark.Please try again.</div>';
@@ -97,8 +95,9 @@ $('.todolist').on('change','#sortable li input[type="checkbox"]',function()
 //delete done task from "already done"
 $('.todolist').on('click','.remove-item',function()
 {
+
   var removeItemID = $(this).parent().find('.current_item').val();
- removeItem(this);
+  removeItem(this);
  $.ajax({
                      url: "{{ env.HOST_NAME }}/deleteitem", 
                       method: "POST",
@@ -111,6 +110,7 @@ $('.todolist').on('click','.remove-item',function()
                          {                          
                            var message = '<div class="alert alert-success"><strong>Success! </strong>'+data.message+'</div>';
                             $("#application_message").html(message);
+                             
                    },
                          error:function() {
                           var message = '<div class="alert alert-danger"><strong>Error! </strong>Item  did not delete.Please try again.</div>';
@@ -121,7 +121,8 @@ $('.todolist').on('click','.remove-item',function()
 });
 
 // count tasks
-function countTodos(){
+function countTodos()
+{
     var count = $("#sortable .not-done-marked").length;
     $('.count-todos').html(count);
 }
@@ -135,15 +136,6 @@ function createTodo(text,itemID)
     $('.add-todo').val('');
 }
 
-
-//mark task as done
-function done(doneItem)
-{
-    var done = doneItem;
-    var markup = '<li>'+ done +'<button class="btn btn-default btn-xs pull-right  remove-item"><span class="glyphicon glyphicon-remove"></span></button></li>';
-    $('#done-items').append(markup);
-    $('.remove').remove();
-}
 //remove done task from list
 function removeItem(element){
     $(element).parent().parent().remove();

@@ -14,4 +14,5 @@ create database test then create collection contet(Define in model) in mongodb.
 
 you can run http://localhost:3000/items.
 
-Application is running on aws server.This is live url:http://13.126.89.183:3000/items
+Application is running on aws server.This is live url:http://13.126.53.90:3000/items
+
