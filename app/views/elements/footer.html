@@ -1,0 +1,155 @@
+
+<script>
+$("#sortable").sortable();
+$("#sortable").disableSelection();
+countTodos();
+//create todo
+$('.add-todo').on('keypress',function (e) 
+{
+      e.preventDefault
+      if (e.which == 13) {
+           var todo = $(this).val();
+            //call ajax
+            $.ajax({
+                     url: "{{ env.HOST_NAME }}/saveitem", 
+                      method: "POST",
+                    data: { item :todo},
+                     beforeSend: function() 
+                     {
+                      console.log("Before save");
+                     },
+                         success:function(data) 
+                         {
+                          if(data.itemvalidationError)
+                          {
+  var message = '<div class="alert alert-danger"><strong>Error! </strong>'+data.message+'</div>';
+                            $("#application_message").html(message);
+                          }
+                          else
+                          {
+                            var message = '<div class="alert alert-success"><strong>Success! </strong>'+data.message+'</div>';
+                            $("#application_message").html(message);
+                            createTodo(todo,data.resultData._id); 
+                          }
+                          
+                   },
+                         error:function() {
+                          var message = '<div class="alert alert-danger"><strong>Error! </strong>Item list did not add.Please try again.</div>';
+                            $("#application_message").html(message);
+                     },
+                  });
+
+            countTodos();
+         
+      }
+});
+// mark task as done
+$('.todolist').on('change','#sortable li input[type="checkbox"]',function()
+{
+   var currentItemId=  $(this).parent().parent().find('.current_item').val();
+   var itemMarkStatus;
+      
+    if($(this).prop('checked'))
+    {
+      //  var doneItem = $(this).parent().parent().find('label').text();
+        $(this).parent().parent().parent().removeClass('not-done-marked');
+        $(this).parent().parent().parent().addClass('done-list-marked');
+          $(this).parent().addClass('all-ready-marked');
+          itemMarkStatus = true;
+          
+       // done(doneItem);
+        //countTodos();
+    }
+    else
+    {
+        //var doneItem = $(this).parent().parent().find('label').text();
+        $(this).parent().parent().parent().addClass('not-done-marked');
+        $(this).parent().parent().parent().removeClass('done-list-marked');
+          $(this).parent().removeClass('all-ready-marked');
+          itemMarkStatus = false
+      
+       // done(doneItem);
+        //countTodos();
+    }
+      $.ajax({
+                     url: "{{ env.HOST_NAME }}/markitem", 
+                      method: "POST",
+                    data: { itemId :currentItemId,markstatus:itemMarkStatus},
+                     beforeSend: function() 
+                     {
+                      console.log("Before save");
+                     },
+                         success:function(data) 
+                         {
+                              countTodos();
+
+                           var message = '<div class="alert alert-success"><strong>Success! </strong>'+data.message+'</div>';
+                            $("#application_message").html(message);
+                          //console.log(data);
+                   },
+                         error:function() {
+                          var message = '<div class="alert alert-danger"><strong>Error! </strong>Item  did not mark.Please try again.</div>';
+                            $("#application_message").html(message);
+                     },
+                  });
+});
+
+//delete done task from "already done"
+$('.todolist').on('click','.remove-item',function()
+{
+  var removeItemID = $(this).parent().find('.current_item').val();
+ removeItem(this);
+ $.ajax({
+                     url: "{{ env.HOST_NAME }}/deleteitem", 
+                      method: "POST",
+                    data: { itemId :removeItemID},
+                     beforeSend: function() 
+                     {
+                      console.log("Before save");
+                     },
+                         success:function(data) 
+                         {                          
+                           var message = '<div class="alert alert-success"><strong>Success! </strong>'+data.message+'</div>';
+                            $("#application_message").html(message);
+                   },
+                         error:function() {
+                          var message = '<div class="alert alert-danger"><strong>Error! </strong>Item  did not delete.Please try again.</div>';
+                            $("#application_message").html(message);
+                     },
+                  });
+
+});
+
+// count tasks
+function countTodos(){
+    var count = $("#sortable .not-done-marked").length;
+    $('.count-todos').html(count);
+}
+
+//create task
+//create task
+function createTodo(text,itemID)
+{
+    var markup = '<li class="ui-state-default not-done-marked ui-sortable-handle"><div class="checkbox"><label><input type="hidden" value="'+itemID+'" name="item_id" class="current_item"><input type="checkbox" value="" />'+ text +'</label> <button class="remove-item btn btn-default btn-xs pull-right"><span class="glyphicon glyphicon-remove"></span></button></div></li>';
+    $('#sortable').prepend(markup);
+    $('.add-todo').val('');
+}
+
+
+//mark task as done
+function done(doneItem)
+{
+    var done = doneItem;
+    var markup = '<li>'+ done +'<button class="btn btn-default btn-xs pull-right  remove-item"><span class="glyphicon glyphicon-remove"></span></button></li>';
+    $('#done-items').append(markup);
+    $('.remove').remove();
+}
+//remove done task from list
+function removeItem(element){
+    $(element).parent().parent().remove();
+     countTodos();
+}
+</script>
+
+</body>
+</html>
