@@ -1,18 +1,16 @@
-Simple you run command npm install (insall all required module).
+#Run command npm install (insall all required module).
 
-config database change config/database.js.
+#Change mongodb databse configuration in config/database.js.
 
-'url' : 'mongodb://username:password@hostname:port/database'.
+#Database connection string  'url' : 'mongodb://username:password@hostname:port/database'.
 
-example : 'url' : 'mongodb://test:123456/127.0.0.1:27017/test' .
+#Example  as url : 'mongodb://test:123456/127.0.0.1:27017/test' .
 
-Change port number in .env file.
+#Change port number in .env file.
 
-HOST_NAME= http://localhost:3000/.
+#HOST_NAME= http://hostname:3000/.
 
-create database test then create collection contet(Define in model) in mongodb.
+#you can see todo item list http://localhost:3000/items.
 
-you can run http://localhost:3000/items.
-
-Application is running on aws server.This is live url:http://13.126.53.90:3000/items
+#Application is running on aws server.This is url:- http://13.126.53.90:3000/items
 
